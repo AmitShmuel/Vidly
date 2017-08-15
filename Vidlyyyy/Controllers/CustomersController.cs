@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Vidlyyyy.Models;
 using System.Data.Entity;
 using Vidlyyyy.ViewModels;
+using AutoMapper;
 
 namespace Vidlyyyy.Controllers
 {
@@ -14,6 +15,7 @@ namespace Vidlyyyy.Controllers
         public CustomersController()
         {
             _context = new ApplicationDbContext();
+            Mapper.Initialize(cfg => cfg.CreateMap<Customer, Customer>());
         }
 
         protected override void Dispose(bool disposing)
@@ -40,7 +42,7 @@ namespace Vidlyyyy.Controllers
             return View(customer);
         }
 
-        public ActionResult New()
+        public ActionResult NewCustomer()
         {
             var memebershipTypes = _context.MembershipTypes.ToList();
 
@@ -60,10 +62,7 @@ namespace Vidlyyyy.Controllers
             else
             {
                 var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
-                customerInDb.Name = customer.Name;
-                customerInDb.Birthdate = customer.Birthdate;
-                customerInDb.MembershipTypeId = customer.MembershipTypeId;
-                customerInDb.IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter;
+                Mapper.Map(customer, customerInDb);
             }
 
             _context.SaveChanges();

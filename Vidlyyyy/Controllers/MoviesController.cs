@@ -4,6 +4,8 @@ using Vidlyyyy.Models;
 using Vidlyyyy.ViewModels;
 using System.Linq;
 using System.Data.Entity;
+using System;
+using AutoMapper;
 
 namespace Vidlyyyy.Controllers
 {
@@ -14,6 +16,7 @@ namespace Vidlyyyy.Controllers
         public MoviesController()
         {
             _context = new ApplicationDbContext();
+            Mapper.Initialize(cfg => cfg.CreateMap<Movie, Movie>());
         }
 
         protected override void Dispose(bool disposing)
@@ -40,6 +43,52 @@ namespace Vidlyyyy.Controllers
             return View(movie);
         }
 
+        public ActionResult NewMovie()
+        {
+            var genres = _context.Genres.ToList();
+
+            var viewModel = new MovieFormViewModel()
+            {
+                Genres = genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            movie.DateAdded = DateTime.Now;
+
+            if (movie.Id == 0)
+                _context.Movies.Add(movie);
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+                Mapper.Map(movie, movieInDb);
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
+
+            if (movie == null)
+                return HttpNotFound();
+
+            var viewModel = new MovieFormViewModel()
+            {
+                Movie = movie,
+                Genres = _context.Genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+        
         //// GET: Movies/Random
         //public ActionResult Random()
         //{
