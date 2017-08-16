@@ -56,12 +56,25 @@ namespace Vidlyyyy.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
+            if(!ModelState.IsValid)
+            {
+                var modelView = new MovieFormViewModel(movie)
+                {
+                    Genres = _context.Genres.ToList()
+                };
+
+                return View("MovieForm", modelView);
+            }
+
             movie.DateAdded = DateTime.Now;
 
             if (movie.Id == 0)
+            {
                 _context.Movies.Add(movie);
+            }
             else
             {
                 var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
@@ -80,32 +93,12 @@ namespace Vidlyyyy.Controllers
             if (movie == null)
                 return HttpNotFound();
 
-            var viewModel = new MovieFormViewModel()
+            var viewModel = new MovieFormViewModel(movie)
             {
-                Movie = movie,
                 Genres = _context.Genres
             };
 
             return View("MovieForm", viewModel);
         }
-        
-        //// GET: Movies/Random
-        //public ActionResult Random()
-        //{
-        //    var movie = new Movie() { Name = "Shrek!" };
-        //    var customers = new List<Customer>
-        //    {
-        //        new Customer { Name = "Customer 1" },
-        //        new Customer { Name = "Customer 2" }
-        //    };
-
-        //    var viewModel = new RandomMovieViewModel
-        //    {
-        //        Movie = movie,
-        //        Customers = customers
-        //    };
-
-        //    return View(viewModel);
-        //}
     }
 }
