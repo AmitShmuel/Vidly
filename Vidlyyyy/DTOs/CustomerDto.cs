@@ -20,6 +20,8 @@ namespace Vidlyyyy.DTOs
 
         public bool IsSubscribedToNewsletter { get; set; }
 
+        public MembershipTypeDto membershipType { get; set; }
+
         public byte MembershipTypeId { get; set; } // Foreign key
     }
 }

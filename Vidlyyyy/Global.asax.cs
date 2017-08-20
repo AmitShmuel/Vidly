@@ -15,7 +15,11 @@ namespace Vidlyyyy
             Mapper.Initialize(cfg =>
             {
                 cfg.CreateMap<Customer, CustomerDto>();
-                cfg.CreateMap<CustomerDto, Customer>();
+                cfg.CreateMap<CustomerDto, Customer>().ForMember(m => m.Id, opt => opt.Ignore());
+                cfg.CreateMap<Movie, MovieDto>();
+                cfg.CreateMap<MovieDto, Movie>().ForMember(m => m.Id, opt => opt.Ignore());
+                cfg.CreateMap<MembershipType, MembershipTypeDto>();
+                cfg.CreateMap<Genre, GenreDto>();
             });
             GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
