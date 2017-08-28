@@ -5,6 +5,7 @@ using Vidlyyyy.Models;
 using System.Data.Entity;
 using Vidlyyyy.ViewModels;
 using AutoMapper;
+using System.Runtime.Caching;
 
 namespace Vidlyyyy.Controllers
 {
@@ -25,6 +26,13 @@ namespace Vidlyyyy.Controllers
 
         public ViewResult Index()
         {
+            if(MemoryCache.Default["Genres"] == null)
+            {
+                MemoryCache.Default["Genres"] = _context.Genres.ToList();
+            }
+
+            var genres = MemoryCache.Default["Genres"] as IEnumerable<Genre>;
+
             return View();
         }
 
